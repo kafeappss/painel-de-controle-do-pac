@@ -1,0 +1,766 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Painel do PAC</title>
+<meta name="description" content="Cronograma do Projeto do PAC: 5 semanas de preparação e 3 aulas da oficina de lógica de programação.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%232a78d6'/%3E%3Crect x='6' y='8' width='13' height='4' rx='2' fill='white'/%3E%3Crect x='11' y='14' width='15' height='4' rx='2' fill='white'/%3E%3Crect x='8' y='20' width='10' height='4' rx='2' fill='white'/%3E%3C/svg%3E">
+<style>
+  :root {
+    color-scheme: light;
+    --page: #f9f9f7;
+    --surface: #fcfcfb;
+    --ink: #0b0b0b;
+    --ink-2: #52514e;
+    --ink-3: #6b6a65;
+    --grid: #e1e0d9;
+    --axis: #c3c2b7;
+    --border: rgba(11, 11, 11, 0.10);
+    --now-wash: rgba(42, 120, 214, 0.06);
+    --prep: #2a78d6;
+    --prep-soft: rgba(42, 120, 214, 0.14);
+    --prep-ink: #1c5cab;
+    --aula: #eb6834;
+    --aula-soft: rgba(235, 104, 52, 0.13);
+    --aula-ink: #a8431b;
+    --label-w: 200px;
+    --row: 52px;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      color-scheme: dark;
+      --page: #0d0d0d;
+      --surface: #1a1a19;
+      --ink: #ffffff;
+      --ink-2: #c3c2b7;
+      --ink-3: #9d9c95;
+      --grid: #2c2c2a;
+      --axis: #383835;
+      --border: rgba(255, 255, 255, 0.10);
+      --now-wash: rgba(57, 135, 229, 0.09);
+      --prep: #3987e5;
+      --prep-soft: rgba(57, 135, 229, 0.22);
+      --prep-ink: #9ec5f4;
+      --aula: #d95926;
+      --aula-soft: rgba(217, 89, 38, 0.22);
+      --aula-ink: #f3a684;
+    }
+  }
+  :root[data-theme="dark"] {
+    color-scheme: dark;
+    --page: #0d0d0d;
+    --surface: #1a1a19;
+    --ink: #ffffff;
+    --ink-2: #c3c2b7;
+    --ink-3: #9d9c95;
+    --grid: #2c2c2a;
+    --axis: #383835;
+    --border: rgba(255, 255, 255, 0.10);
+    --now-wash: rgba(57, 135, 229, 0.09);
+    --prep: #3987e5;
+    --prep-soft: rgba(57, 135, 229, 0.22);
+    --prep-ink: #9ec5f4;
+    --aula: #d95926;
+    --aula-soft: rgba(217, 89, 38, 0.22);
+    --aula-ink: #f3a684;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--page);
+    color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .page { max-width: 1200px; margin: 0 auto; padding: 32px 16px 56px; }
+  @media (min-width: 720px) { .page { padding: 48px 32px 72px; } }
+
+  /* ---------- Cabeçalho ---------- */
+  .eyebrow {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--prep-ink);
+  }
+  .objetivo-label { margin: 18px 0 4px; font-size: 13px; font-weight: 600; color: var(--ink-3); }
+  h1 {
+    margin: 0;
+    max-width: 820px;
+    font-size: clamp(26px, 4.2vw, 40px);
+    line-height: 1.12;
+    letter-spacing: -0.02em;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    margin-top: 28px;
+  }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat-label { font-size: 12px; font-weight: 600; color: var(--ink-3); }
+  .stat-value { margin-top: 2px; font-size: clamp(18px, 4.6vw, 21px); font-weight: 650; line-height: 1.25; }
+  .stat-sub { margin-top: 2px; font-size: 13px; color: var(--ink-2); }
+
+  /* ---------- Cartões / seções ---------- */
+  .card {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 20px 16px;
+  }
+  .card-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px 24px;
+    margin-bottom: 14px;
+  }
+  h2 { margin: 0; font-size: 18px; font-weight: 650; letter-spacing: -0.01em; }
+  .section-title { margin: 40px 0 12px; }
+  .legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 18px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    font-size: 13px;
+    color: var(--ink-2);
+  }
+  .legend li { display: flex; align-items: center; gap: 8px; }
+  .sw { display: inline-block; width: 22px; height: 10px; border-radius: 3px; flex: none; }
+  .sw--prep { background: var(--prep); }
+  .sw--handoff { background: var(--prep-soft); box-shadow: inset 0 0 0 1.5px var(--prep); }
+  .sw--aula { width: 10px; border-radius: 50%; background: var(--aula); }
+  .sw--hoje { width: 2px; height: 14px; border-radius: 1px; background: var(--ink); }
+  .scroll-hint { display: none; margin: 10px 0 0; font-size: 12px; color: var(--ink-3); }
+  @media (max-width: 1000px) { .scroll-hint { display: block; } }
+  @media (max-width: 600px) {
+    :root { --label-w: 136px; --row: 56px; }
+    .card { padding: 16px 16px 12px; }
+    .g-name { font-size: 13px; }
+  }
+
+  /* ---------- Gantt ---------- */
+  .gantt-scroll { overflow-x: auto; overscroll-behavior-x: contain; }
+  .gantt { position: relative; display: grid; min-width: 960px; }
+  .gantt > * { min-width: 0; }
+
+  .g-corner, .g-label {
+    position: sticky;
+    left: 0;
+    z-index: 3;
+    background: var(--surface);
+    box-shadow: 1px 0 0 var(--axis);
+  }
+  .g-corner {
+    display: flex;
+    align-items: flex-end;
+    padding: 0 12px 10px 0;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink-3);
+  }
+  .g-phase {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8px;
+    margin: 0 3px 6px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 13px;
+    white-space: nowrap;
+    overflow: hidden;
+  }
+  .g-phase strong { font-weight: 650; }
+  .g-phase span { font-size: 12px; overflow: hidden; text-overflow: ellipsis; }
+  .g-phase--prep { background: var(--prep-soft); color: var(--prep-ink); }
+  .g-phase--aula { background: var(--aula-soft); color: var(--aula-ink); }
+
+  .g-colhead {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    padding: 8px 10px 10px;
+    font-size: 12px;
+    color: var(--ink-2);
+    font-variant-numeric: tabular-nums;
+  }
+  .g-colhead strong { font-size: 13px; font-weight: 650; color: var(--ink); }
+  .g-tag {
+    align-self: flex-start;
+    margin-top: 3px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+    white-space: nowrap;
+  }
+  .g-tag--hol { background: var(--grid); color: var(--ink-2); }
+  .g-tag--now { background: var(--ink); color: var(--surface); }
+  .g-tag--prazo { background: var(--aula-soft); color: var(--aula-ink); }
+
+  .g-colbg { z-index: 0; box-shadow: inset 1px 0 0 var(--grid); }
+  .g-colbg.is-now { background: var(--now-wash); }
+  .g-colbg.is-deadline { box-shadow: inset 2px 0 0 var(--ink-2); }
+  .g-rowbg { z-index: 0; box-shadow: inset 0 1px 0 var(--grid); pointer-events: none; }
+  .g-rowbg.is-last { box-shadow: inset 0 1px 0 var(--grid), inset 0 -1px 0 var(--grid); }
+
+  .g-label {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0 12px 0 0;
+    box-shadow: 1px 0 0 var(--axis), inset 0 1px 0 var(--grid);
+  }
+  .g-name { font-size: 14px; font-weight: 600; line-height: 1.25; }
+  .g-meta { font-size: 12px; color: var(--ink-3); line-height: 1.3; }
+
+  .g-cell {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    outline: none;
+    cursor: default;
+  }
+  .g-fill {
+    flex: 1;
+    height: 26px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--prep);
+    font-size: 11px;
+    font-weight: 650;
+    letter-spacing: .02em;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: filter .12s;
+  }
+  .g-fill.is-start { margin-left: 6px; border-radius: 4px 0 0 4px; }
+  .g-fill.is-end { margin-right: 6px; border-radius: 0 4px 4px 0; }
+  .g-fill.is-start.is-end { border-radius: 4px; }
+  .g-fill.is-handoff {
+    background: linear-gradient(var(--prep-soft), var(--prep-soft)), var(--surface);
+    box-shadow: inset 0 0 0 1.5px var(--prep);
+    color: var(--prep-ink);
+  }
+  .g-cell:hover .g-fill { filter: brightness(1.1) saturate(1.05); }
+  .g-cell:focus-visible .g-fill { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .g-link { position: relative; z-index: 1; pointer-events: none; }
+  .g-link::before {
+    content: "";
+    position: absolute;
+    left: calc(50% - 1px);
+    top: calc(25% + 13px);
+    bottom: calc(25% + 13px);
+    width: 2px;
+    background: var(--prep);
+  }
+  .g-link::after {
+    content: "";
+    position: absolute;
+    left: calc(50% - 5px);
+    bottom: calc(25% + 13px);
+    border: 5px solid transparent;
+    border-bottom: 0;
+    border-top: 6px solid var(--prep);
+  }
+
+  .g-acomp { position: relative; z-index: 2; display: grid; place-items: center; outline: none; }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 9px 2px 8px;
+    border-radius: 999px;
+    background: linear-gradient(var(--aula-soft), var(--aula-soft)), var(--surface);
+    color: var(--aula-ink);
+    font-size: 12px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .pill::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--aula); }
+  .g-acomp:focus-visible .pill { outline: 2px solid var(--ink); outline-offset: 2px; }
+
+  .g-today { position: relative; z-index: 1; pointer-events: none; }
+  .g-today i { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: var(--ink); opacity: .8; }
+
+  /* ---------- Tooltip ---------- */
+  .tip {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 50;
+    max-width: 280px;
+    padding: 8px 10px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--surface);
+    font-size: 12.5px;
+    line-height: 1.4;
+    pointer-events: none;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, .18);
+  }
+  .tip strong { display: block; font-size: 13px; margin-bottom: 2px; }
+  .tip[hidden] { display: none; }
+
+  /* ---------- Semana a semana ---------- */
+  .weeks { display: grid; grid-template-columns: repeat(auto-fill, minmax(205px, 1fr)); gap: 12px; }
+  .week, .aula {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .week.is-now { border-color: var(--prep); box-shadow: 0 0 0 1px var(--prep); }
+  .week.is-done { opacity: .62; }
+  .box-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+  h3 { margin: 0; font-size: 16px; font-weight: 650; }
+  .badge {
+    padding: 0 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 20px;
+    white-space: nowrap;
+    background: var(--grid);
+    color: var(--ink-2);
+  }
+  .badge--now { background: var(--prep); color: #fff; }
+  .badge--aula { background: var(--aula); color: #fff; }
+  .dates { margin-top: 2px; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+  .hol { margin-top: 6px; font-size: 12px; color: var(--ink-3); }
+  .team-list { display: flex; flex-direction: column; gap: 7px; margin: 14px 0 0; padding: 0; list-style: none; }
+  .team-list li { position: relative; padding-left: 15px; font-size: 14px; line-height: 1.4; }
+  .team-list li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: .45em;
+    width: 7px;
+    height: 7px;
+    border-radius: 2px;
+    background: var(--prep);
+  }
+  .team-list li.is-handoff::before { background: var(--prep-soft); box-shadow: inset 0 0 0 1.5px var(--prep); }
+  .team-list .tag {
+    display: inline-block;
+    margin-left: 6px;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 18px;
+    background: var(--prep-soft);
+    color: var(--prep-ink);
+  }
+  .count { margin-top: 12px; font-size: 12px; color: var(--ink-3); }
+
+  /* ---------- Aulas ---------- */
+  .aulas { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+  .aula { border-top: 3px solid var(--aula); }
+  .aula.is-done { opacity: .62; }
+  .aula-date { margin-top: 4px; font-size: 15px; font-weight: 600; }
+  .aula-info { margin-top: 2px; font-size: 13px; color: var(--ink-2); }
+  .aula-sub { margin: 14px 0 8px; font-size: 12px; font-weight: 600; color: var(--ink-3); }
+  .chips { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+  .chips li {
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 13px;
+    background: var(--aula-soft);
+    color: var(--aula-ink);
+    font-weight: 600;
+  }
+
+  footer { margin-top: 40px; font-size: 12px; color: var(--ink-3); }
+
+  @media print {
+    body { background: #fff; }
+    .page { padding: 0; }
+    .card, .week, .aula, .stat { break-inside: avoid; }
+    .gantt-scroll { overflow: visible; }
+    .scroll-hint { display: none !important; }
+    * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  }
+  @media (prefers-reduced-motion: reduce) { .g-fill { transition: none; } }
+</style>
+</head>
+<body>
+<main class="page">
+  <header>
+    <p class="eyebrow">Painel de controle do PAC</p>
+    <p class="objetivo-label">Objetivo final</p>
+    <h1 id="objetivo"></h1>
+    <div class="stats" id="stats"></div>
+  </header>
+
+  <section class="card" aria-labelledby="t-crono">
+    <div class="card-head">
+      <h2 id="t-crono">Cronograma</h2>
+      <ul class="legend">
+        <li><span class="sw sw--prep"></span>Equipe trabalhando</li>
+        <li><span class="sw sw--handoff"></span>Handoff (passagem entre equipes)</li>
+        <li><span class="sw sw--aula"></span>Acompanha a aula</li>
+        <li><span class="sw sw--hoje"></span>Hoje</li>
+      </ul>
+    </div>
+    <div class="gantt-scroll">
+      <div class="gantt" id="gantt" role="img" aria-label="Gráfico de Gantt do Projeto do PAC. O detalhamento em texto está nas seções Semana a semana e Dias de aula."></div>
+    </div>
+    <p class="scroll-hint">Arraste para o lado para ver todas as semanas e as aulas →</p>
+  </section>
+
+  <h2 class="section-title">Semana a semana</h2>
+  <div class="weeks" id="semanas"></div>
+
+  <h2 class="section-title">Dias de aula</h2>
+  <div class="aulas" id="aulas"></div>
+
+  <footer id="rodape"></footer>
+</main>
+
+<script>
+(() => {
+  "use strict";
+
+  /* =====================================================================
+     DADOS DO PROJETO — edite aqui para mudar datas, equipes e aulas.
+     Datas no formato AAAA-MM-DD.
+     ===================================================================== */
+  const DADOS = {
+    fase: "Projeto do PAC",
+    objetivo: "Montar e executar uma oficina que ensine lógica de programação",
+    prazoFinal: "2026-11-14",
+    horario: "08:30–12:00",
+    maxAlunos: 21,
+
+    semanas: [
+      { nome: "Semana 1", inicio: "2026-10-06", fim: "2026-10-13" },
+      { nome: "Semana 2", inicio: "2026-10-14", fim: "2026-10-21" },
+      { nome: "Semana 3", inicio: "2026-10-22", fim: "2026-10-29" },
+      { nome: "Semana 4", inicio: "2026-10-30", fim: "2026-11-06" },
+      { nome: "Semana 5", inicio: "2026-11-07", fim: "2026-11-13" },
+    ],
+
+    aulas: [
+      { nome: "Aula 1", data: "2026-11-14" },
+      { nome: "Aula 2", data: "2026-11-21" },
+      { nome: "Aula 3", data: "2026-11-28" },
+    ],
+
+    // Equipes na ordem das linhas do gráfico. "semanas" = números das semanas
+    // em que a equipe trabalha. Pares de handoff ficam em linhas vizinhas.
+    equipes: [
+      { nome: "Geração de Conteúdo", semanas: [1, 2, 3], handoff: { semana: 3, para: "Atividades Práticas" } },
+      { nome: "Atividades Práticas", semanas: [3, 4, 5], handoff: { semana: 3, de: "Geração de Conteúdo" } },
+      { nome: "Experiência", semanas: [1, 2, 3], handoff: { semana: 3, para: "Ambiente e Suporte" } },
+      { nome: "Ambiente e Suporte", semanas: [3, 4, 5], handoff: { semana: 3, de: "Experiência" }, acompanhaAulas: true },
+      { nome: "Avaliação de Qualidade", semanas: [2, 3, 4, 5] },
+      { nome: "Mentores", semanas: [3, 4, 5], acompanhaAulas: true },
+      { nome: "Professores", semanas: [3, 4, 5], acompanhaAulas: true },
+      { nome: "Comunicação e Registro", semanas: [1, 3, 5], acompanhaAulas: true },
+    ],
+
+    feriados: [
+      { data: "2026-10-12", nome: "Nossa Senhora Aparecida" },
+      { data: "2026-11-02", nome: "Finados" },
+      { data: "2026-11-15", nome: "Proclamação da República" },
+      { data: "2026-11-20", nome: "Dia da Consciência Negra" },
+    ],
+  };
+
+  /* ---------------- datas ---------------- */
+  const DIA_MS = 864e5;
+  const num = s => { const [a, m, d] = s.split("-").map(Number); return Date.UTC(a, m - 1, d) / DIA_MS; };
+  const asDate = n => new Date(n * DIA_MS);
+  const pad = n => String(n).padStart(2, "0");
+  const ddmm = n => { const d = asDate(n); return pad(d.getUTCDate()) + "/" + pad(d.getUTCMonth() + 1); };
+  const SEM = ["dom", "seg", "ter", "qua", "qui", "sex", "sáb"];
+  const SEM_LONGO = ["domingo", "segunda-feira", "terça-feira", "quarta-feira", "quinta-feira", "sexta-feira", "sábado"];
+  const MESES = ["janeiro", "fevereiro", "março", "abril", "maio", "junho", "julho", "agosto", "setembro", "outubro", "novembro", "dezembro"];
+  const ds = n => SEM[asDate(n).getUTCDay()];
+  const longo = n => { const d = asDate(n); return `${SEM_LONGO[d.getUTCDay()]}, ${d.getUTCDate()} de ${MESES[d.getUTCMonth()]}`; };
+  const dias = n => (n === 1 ? "1 dia" : `${n} dias`);
+  const listaPt = xs => (xs.length < 2 ? xs.join("") : xs.slice(0, -1).join(", ") + " e " + xs[xs.length - 1]);
+
+  const semanas = DADOS.semanas.map((s, i) => ({ ...s, n: i + 1, ini: num(s.inicio), fim: num(s.fim) }));
+  const aulas = DADOS.aulas.map((a, i) => ({ ...a, n: i + 1, dia: num(a.data) }));
+  const feriados = DADOS.feriados.map(f => ({ ...f, dia: num(f.data) }));
+  const prazo = num(DADOS.prazoFinal);
+  const acompanham = DADOS.equipes.filter(e => e.acompanhaAulas).map(e => e.nome);
+
+  // Hoje (pode ser simulado com ?hoje=AAAA-MM-DD na URL)
+  const hoje = (() => {
+    const p = new URLSearchParams(location.search).get("hoje");
+    if (p && /^\d{4}-\d{2}-\d{2}$/.test(p)) return num(p);
+    const t = new Date();
+    return Date.UTC(t.getFullYear(), t.getMonth(), t.getDate()) / DIA_MS;
+  })();
+  const semanaAtual = semanas.find(s => hoje >= s.ini && hoje <= s.fim) || null;
+  const aulaHoje = aulas.find(a => a.dia === hoje) || null;
+  const proximaAula = aulas.find(a => a.dia > hoje) || null;
+
+  const intervaloSemanas = ns => {
+    const runs = [];
+    ns.forEach(n => {
+      const r = runs[runs.length - 1];
+      if (r && n === r[1] + 1) r[1] = n; else runs.push([n, n]);
+    });
+    return runs.map(([a, b]) => (a === b ? `S${a}` : `S${a}–S${b}`)).join(", ");
+  };
+
+  /* ---------------- DOM ---------------- */
+  const h = (tag, attrs, ...kids) => {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(attrs || {})) {
+      if (v == null || v === false) continue;
+      if (k === "class") el.className = v;
+      else if (k === "style") el.style.cssText = v;
+      else el.setAttribute(k, v === true ? "" : v);
+    }
+    for (const kid of kids.flat()) if (kid != null && kid !== false) el.append(kid);
+    return el;
+  };
+  const tips = new WeakMap();
+
+  /* ---------------- Cabeçalho ---------------- */
+  function renderTopo() {
+    document.getElementById("objetivo").textContent = DADOS.objetivo;
+
+    const fimAulas = aulas[aulas.length - 1].dia;
+    let hojeValor, hojeSub = `${ds(hoje)}, ${ddmm(hoje)}`;
+    if (hoje < semanas[0].ini) { hojeValor = "Antes do início"; hojeSub += ` · começa em ${dias(semanas[0].ini - hoje)}`; }
+    else if (semanaAtual) hojeValor = `Semana ${semanaAtual.n} de ${semanas.length}`;
+    else if (aulaHoje) hojeValor = `Dia da ${aulaHoje.nome}`;
+    else if (hoje > fimAulas) hojeValor = "Oficina concluída";
+    else hojeValor = "Entre aulas";
+
+    const prazoSub = hoje < prazo ? `faltam ${dias(prazo - hoje)}` : hoje === prazo ? "é hoje!" : "prazo encerrado";
+
+    const aulasSub = aulaHoje ? `hoje: ${aulaHoje.nome}`
+      : proximaAula ? `próxima: ${proximaAula.nome} em ${dias(proximaAula.dia - hoje)}`
+      : "todas realizadas";
+
+    const [h1, m1] = DADOS.horario.split(/[–-]/)[0].split(":").map(Number);
+    const [h2, m2] = DADOS.horario.split(/[–-]/)[1].split(":").map(Number);
+    const min = h2 * 60 + m2 - (h1 * 60 + m1);
+    const duracao = `${Math.floor(min / 60)}h${min % 60 ? pad(min % 60) : ""} por aula`;
+
+    const diasAula = aulas.map(a => asDate(a.dia).getUTCDate());
+    const mesmoMes = aulas.every(a => asDate(a.dia).getUTCMonth() === asDate(aulas[0].dia).getUTCMonth());
+    const aulasValor = mesmoMes
+      ? `${listaPt(diasAula.map(String))}/${pad(asDate(aulas[0].dia).getUTCMonth() + 1)}`
+      : listaPt(aulas.map(a => ddmm(a.dia)));
+
+    const tiles = [
+      ["Hoje", hojeValor, hojeSub],
+      ["Prazo final", ddmm(prazo), prazoSub],
+      ["Aulas", aulasValor, aulasSub],
+      ["Horário das aulas", DADOS.horario, duracao],
+      ["Turma", `${DADOS.maxAlunos} alunos`, "quantidade máxima"],
+    ];
+    document.getElementById("stats").append(...tiles.map(([l, v, s]) =>
+      h("div", { class: "stat" },
+        h("div", { class: "stat-label" }, l),
+        h("div", { class: "stat-value" }, v),
+        h("div", { class: "stat-sub" }, s))));
+  }
+
+  /* ---------------- Gantt ---------------- */
+  function renderGantt() {
+    const g = document.getElementById("gantt");
+    const nS = semanas.length, nA = aulas.length, eqs = DADOS.equipes;
+    const colS = i => 2 + i;
+    const colA = i => 2 + nS + i;
+    const ROW0 = 3;
+    g.style.gridTemplateColumns = `var(--label-w) repeat(${nS}, minmax(104px, 1fr)) repeat(${nA}, minmax(100px, .85fr))`;
+    g.style.gridTemplateRows = `auto auto repeat(${eqs.length}, var(--row))`;
+
+    // fundo das colunas (atrás de tudo)
+    for (let c = colS(0); c < colA(nA); c++) {
+      const now = (semanaAtual && c === colS(semanaAtual.n - 1)) || (aulaHoje && c === colA(aulaHoje.n - 1));
+      const cls = ["g-colbg", now && "is-now", c === colA(0) && "is-deadline"].filter(Boolean).join(" ");
+      g.append(h("div", { class: cls, style: `grid-row:2/-1;grid-column:${c}` }));
+    }
+    eqs.forEach((_, r) => g.append(h("div", {
+      class: "g-rowbg" + (r === eqs.length - 1 ? " is-last" : ""),
+      style: `grid-row:${ROW0 + r};grid-column:2/-1`,
+    })));
+
+    // cabeçalho
+    g.append(h("div", { class: "g-corner", style: "grid-row:1/3;grid-column:1" }, "Equipes"));
+    g.append(h("div", { class: "g-phase g-phase--prep", style: `grid-row:1;grid-column:${colS(0)}/${colS(nS)}` },
+      h("strong", {}, DADOS.fase),
+      h("span", {}, `${ddmm(semanas[0].ini)} → prazo final ${ddmm(prazo)}`)));
+    g.append(h("div", { class: "g-phase g-phase--aula", style: `grid-row:1;grid-column:${colA(0)}/${colA(nA)}` },
+      h("strong", {}, "Aulas"),
+      h("span", {}, `${DADOS.horario} · até ${DADOS.maxAlunos} alunos`)));
+
+    semanas.forEach((s, i) => {
+      const fer = feriados.filter(f => f.dia >= s.ini && f.dia <= s.fim);
+      g.append(h("div", { class: "g-colhead", style: `grid-row:2;grid-column:${colS(i)}` },
+        h("strong", {}, s.nome),
+        h("span", {}, `${ddmm(s.ini)} – ${ddmm(s.fim)}`),
+        semanaAtual === s && h("span", { class: "g-tag g-tag--now" }, `Hoje · ${ddmm(hoje)}`),
+        fer.map(f => h("span", { class: "g-tag g-tag--hol", title: f.nome }, `Feriado ${ddmm(f.dia)}`))));
+    });
+    aulas.forEach((a, i) => {
+      g.append(h("div", { class: "g-colhead", style: `grid-row:2;grid-column:${colA(i)}` },
+        h("strong", {}, a.nome),
+        h("span", {}, `${ds(a.dia)} · ${ddmm(a.dia)}`),
+        aulaHoje === a && h("span", { class: "g-tag g-tag--now" }, "Hoje"),
+        a.dia === prazo && h("span", { class: "g-tag g-tag--prazo" }, "Prazo final")));
+    });
+
+    // linhas das equipes
+    eqs.forEach((e, r) => {
+      const row = ROW0 + r;
+      g.append(h("div", { class: "g-label", style: `grid-row:${row};grid-column:1` },
+        h("span", { class: "g-name" }, e.nome),
+        h("span", { class: "g-meta" }, intervaloSemanas(e.semanas) + (e.acompanhaAulas ? " · aulas" : ""))));
+
+      e.semanas.forEach(k => {
+        const s = semanas[k - 1];
+        if (!s) return;
+        const ho = e.handoff && e.handoff.semana === k ? e.handoff : null;
+        const fill = ["g-fill",
+          !e.semanas.includes(k - 1) && "is-start",
+          !e.semanas.includes(k + 1) && "is-end",
+          ho && "is-handoff"].filter(Boolean).join(" ");
+        const detalhe = ho ? (ho.para ? `Handoff: passa para ${ho.para}` : `Handoff: recebe de ${ho.de}`) : null;
+        const cell = h("div", {
+          class: "g-cell",
+          style: `grid-row:${row};grid-column:${colS(k - 1)}`,
+          tabindex: 0,
+          "aria-label": `${e.nome}, ${s.nome} (${ddmm(s.ini)} a ${ddmm(s.fim)})${detalhe ? ". " + detalhe : ""}`,
+        }, h("span", { class: fill }, ho ? "handoff" : ""));
+        tips.set(cell, { t: e.nome, l: [`${s.nome} · ${ds(s.ini)} ${ddmm(s.ini)} – ${ds(s.fim)} ${ddmm(s.fim)}`, detalhe] });
+        g.append(cell);
+      });
+
+      if (e.acompanhaAulas) aulas.forEach((a, i) => {
+        const cell = h("div", {
+          class: "g-acomp",
+          style: `grid-row:${row};grid-column:${colA(i)}`,
+          tabindex: 0,
+          "aria-label": `${e.nome} acompanha a ${a.nome}, ${longo(a.dia)}`,
+        }, h("span", { class: "pill" }, "Acompanha"));
+        tips.set(cell, { t: `${e.nome} · ${a.nome}`, l: [`${longo(a.dia)}`, `${DADOS.horario} · até ${DADOS.maxAlunos} alunos`] });
+        g.append(cell);
+      });
+    });
+
+    // seta de handoff entre linhas vizinhas
+    eqs.forEach((e, r) => {
+      if (!e.handoff || !e.handoff.para || eqs[r + 1]?.nome !== e.handoff.para) return;
+      g.append(h("div", { class: "g-link", "aria-hidden": "true", style: `grid-row:${ROW0 + r}/span 2;grid-column:${colS(e.handoff.semana - 1)}` }));
+    });
+
+    // linha de hoje
+    let hojeCol = null, frac = 0.5;
+    if (semanaAtual) { hojeCol = colS(semanaAtual.n - 1); frac = (hoje - semanaAtual.ini + 0.5) / (semanaAtual.fim - semanaAtual.ini + 1); }
+    else if (aulaHoje) hojeCol = colA(aulaHoje.n - 1);
+    if (hojeCol) g.append(h("div", { class: "g-today", "aria-hidden": "true", style: `grid-row:${ROW0}/-1;grid-column:${hojeCol}` },
+      h("i", { style: `left:${(frac * 100).toFixed(2)}%` })));
+
+    // tooltip
+    const tip = h("div", { class: "tip", role: "tooltip", hidden: true });
+    document.body.append(tip);
+    const show = el => {
+      const d = tips.get(el);
+      if (!d) return;
+      tip.replaceChildren(h("strong", {}, d.t), ...d.l.filter(Boolean).map(x => h("div", {}, x)));
+      tip.hidden = false;
+      const r = el.getBoundingClientRect(), tw = tip.offsetWidth, th = tip.offsetHeight;
+      const x = Math.max(8, Math.min(r.left + r.width / 2 - tw / 2, innerWidth - tw - 8));
+      let y = r.top + r.height / 2 - 13 - th - 8;
+      if (y < 8) y = r.bottom - r.height / 2 + 13 + 8;
+      tip.style.transform = `translate(${Math.round(x)}px, ${Math.round(y)}px)`;
+    };
+    const hide = () => { tip.hidden = true; };
+    const alvo = ev => ev.target.closest && ev.target.closest(".g-cell, .g-acomp");
+    g.addEventListener("pointerover", ev => { const el = alvo(ev); el ? show(el) : hide(); });
+    g.addEventListener("pointerleave", hide);
+    g.addEventListener("focusin", ev => { const el = alvo(ev); if (el) show(el); });
+    g.addEventListener("focusout", hide);
+    g.closest(".gantt-scroll").addEventListener("scroll", hide, { passive: true });
+    addEventListener("scroll", hide, { passive: true });
+  }
+
+  /* ---------------- Semana a semana ---------------- */
+  function renderSemanas() {
+    const wrap = document.getElementById("semanas");
+    semanas.forEach(s => {
+      const itens = [];
+      let n = 0;
+      DADOS.equipes.forEach(e => {
+        if (!e.semanas.includes(s.n)) return;
+        n++;
+        const ho = e.handoff && e.handoff.semana === s.n ? e.handoff : null;
+        if (ho && ho.de && DADOS.equipes.some(x => x.nome === ho.de && x.handoff?.para === e.nome && x.semanas.includes(s.n))) return;
+        if (ho && ho.para) itens.push(h("li", { class: "is-handoff" }, `${e.nome} → ${ho.para}`, h("span", { class: "tag" }, "handoff")));
+        else itens.push(h("li", {}, e.nome));
+      });
+      const fer = feriados.filter(f => f.dia >= s.ini && f.dia <= s.fim);
+      const status = hoje > s.fim ? "done" : hoje >= s.ini ? "now" : null;
+      wrap.append(h("article", { class: "week" + (status ? " is-" + status : "") },
+        h("div", { class: "box-head" },
+          h("h3", {}, s.nome),
+          status === "now" && h("span", { class: "badge badge--now" }, "Semana atual"),
+          status === "done" && h("span", { class: "badge" }, "Concluída")),
+        h("div", { class: "dates" }, `${ds(s.ini)} ${ddmm(s.ini)} – ${ds(s.fim)} ${ddmm(s.fim)}`),
+        fer.map(f => h("div", { class: "hol" }, `Feriado: ${ddmm(f.dia)} (${ds(f.dia)}) · ${f.nome}`)),
+        h("ul", { class: "team-list" }, itens),
+        h("div", { class: "count" }, `${n} ${n === 1 ? "equipe" : "equipes"} nesta semana`)));
+    });
+  }
+
+  /* ---------------- Dias de aula ---------------- */
+  function renderAulas() {
+    const wrap = document.getElementById("aulas");
+    aulas.forEach(a => {
+      const status = a === aulaHoje ? ["badge badge--aula", "Hoje"]
+        : a === proximaAula ? ["badge badge--aula", "Próxima"]
+        : a.dia < hoje ? ["badge", "Realizada"] : null;
+      wrap.append(h("article", { class: "aula" + (a.dia < hoje ? " is-done" : "") },
+        h("div", { class: "box-head" },
+          h("h3", {}, a.nome),
+          status && h("span", { class: status[0] }, status[1])),
+        h("div", { class: "aula-date" }, longo(a.dia)),
+        h("div", { class: "aula-info" }, `${DADOS.horario} · até ${DADOS.maxAlunos} alunos` + (a.dia === prazo ? " · prazo final do projeto" : "")),
+        h("div", { class: "aula-sub" }, "Equipes que acompanham"),
+        h("ul", { class: "chips" }, acompanham.map(nome => h("li", {}, nome)))));
+    });
+  }
+
+  renderTopo();
+  renderGantt();
+  renderSemanas();
+  renderAulas();
+  document.getElementById("rodape").textContent =
+    `${DADOS.fase} · ${DADOS.semanas.length} semanas de preparação (${ddmm(semanas[0].ini)} a ${ddmm(semanas[semanas.length - 1].fim)}) e ${aulas.length} aulas da oficina.`;
+})();
+</script>
+</body>
+</html>
