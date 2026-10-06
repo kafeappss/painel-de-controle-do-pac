@@ -2,10 +2,12 @@
 
 Cronograma (gráfico de Gantt) do **Projeto do PAC** — objetivo final: *montar e executar uma oficina que ensine lógica de programação*.
 
-- 5 semanas de preparação (06/10 → prazo final 14/11), com as equipes de cada semana e os handoffs da semana 3
-- 3 aulas separadas: **Aula 1 (14/11)**, **Aula 2 (21/11)** e **Aula 3 (28/11)**, das 08:30 às 12:00, até 21 alunos
-- Nas aulas acompanham: Comunicação e Registro, Ambiente e Suporte, Mentores e Professores
-- Marca o dia de hoje, a semana atual, a próxima aula e os feriados no período
+- Cada semana e cada aula é um cartão com **pills das equipes** que trabalham nela
+- No computador, as semanas ficam lado a lado e cada equipe sempre na mesma linha (como um Gantt); no celular, os cartões ficam empilhados
+- **Toque em uma equipe** (no filtro do topo ou em qualquer pill) para destacar o caminho dela em todas as semanas
+- 5 semanas de preparação (06/10 → prazo final 14/11), com os handoffs da semana 3 marcados com ⇄
+- **Aula 1 (14/11)**, **Aula 2 (21/11)** e **Aula 3 (28/11)**, das 08:30 às 12:00, até 21 alunos, com as equipes que acompanham
+- Contagem regressiva, semana atual destacada e feriados do período
 
 É um único arquivo `index.html` (HTML + CSS + JavaScript puro), sem dependências e sem build.
 
@@ -26,4 +28,7 @@ Abra `index.html` e altere o bloco `DADOS` no início do `<script>`:
 - `equipes`: em quais semanas cada equipe trabalha, handoffs e se acompanha as aulas
 - `horario`, `maxAlunos`, `prazoFinal`, `feriados`
 
-Para ver como o painel fica em outra data, abra com `?hoje=AAAA-MM-DD` na URL (ex.: `?hoje=2026-10-25`).
+## Dicas
+
+- **Link direto para uma equipe:** ao destacar uma equipe, o endereço ganha `#nome-da-equipe` (ex.: `/#mentores`). Mande esse link para o grupo da equipe e a página já abre com ela destacada.
+- **Simular outra data:** abra com `?hoje=AAAA-MM-DD` na URL (ex.: `?hoje=2026-10-25`).
