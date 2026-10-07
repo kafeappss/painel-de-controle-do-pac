@@ -2,7 +2,7 @@
 
 Cronograma (gráfico de Gantt) do **Projeto do PAC** — objetivo final: *montar e executar uma oficina que ensine lógica de programação*.
 
-Visual no estilo de ferramenta de gestão (Jira/ClickUp), com três abas:
+Visual no estilo de ferramenta de gestão (Jira/ClickUp). No topo ficam os dados do projeto (prazo, aulas, horário, turma e progresso) e o cartão **Esta semana**, com as equipes que estão trabalhando agora e a próxima aula. Abaixo, três abas:
 
 - **Cronograma** — linha do tempo com dias, semanas e meses; barras por equipe, semana de handoff destacada com seta para a equipe que recebe, aulas como marcos (◆), linha de hoje, fins de semana e feriados
 - **Quadro** — uma coluna por semana e por aula (Aula 1, 2 e 3), com um cartão para cada equipe
